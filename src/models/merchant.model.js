@@ -27,17 +27,18 @@ const merchantSchema = mongoose.Schema(
       lowercase: true,
       validate(value) {
         if (!value.match('[0-9]{10}')) {
-          throw new Error('Phone Number must contain at least Ten Digits');
+          throw new Error('Please provide a valid phone number');
         }
       },
     },
     image: {
       type: String,
+      trim: true,
     },
     shop: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: [true, 'Merchant must belong to a Shop.'],
+      required: [true, 'Merchant must belong to a Shop'],
     },
     password: {
       type: String,

@@ -27,11 +27,11 @@ const userSchema = mongoose.Schema(
       lowercase: true,
       validate(value) {
         if (!value.match('[0-9]{10}')) {
-          throw new Error('Phone Number must contain at least Ten Digits');
+          throw new Error('Please provide a valid phone number');
         }
       },
     },
-    register: {
+    registerNumber: {
       type: String,
       required: [true, 'Registration Number Required'],
       unique: true,
@@ -54,6 +54,7 @@ const userSchema = mongoose.Schema(
     },
     image: {
       type: String,
+      trim: true,
     },
     password: {
       type: String,

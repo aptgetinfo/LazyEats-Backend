@@ -22,8 +22,14 @@ const shopSchema = mongoose.Schema(
     phone: {
       type: String,
       required: [true, 'Phone Number Required'],
+      unique: true,
       trim: true,
       lowercase: true,
+      validate(value) {
+        if (!value.match('[0-9]{10}')) {
+          throw new Error('Please provide a valid phone number');
+        }
+      },
     },
     address: {
       street: {
@@ -54,6 +60,24 @@ const shopSchema = mongoose.Schema(
     ratingsQuantity: {
       type: Number,
       default: 0,
+    },
+    timeAverage: {
+      type: Number,
+      default: 1,
+      min: [1, 'Average Time must be above 1 minute'],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    ordersTotal: {
+      type: Number,
+      default: 0,
+    },
+    ordersTotalAmount: {
+      type: Number,
+      default: 0,
+    },
+    offlinePaymentAccepted: {
+      type: Boolean,
+      default: false,
     },
     isOpen: {
       type: Boolean,

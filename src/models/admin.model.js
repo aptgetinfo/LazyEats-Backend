@@ -21,6 +21,7 @@ const adminSchema = mongoose.Schema(
     },
     image: {
       type: String,
+      trim: true,
     },
     password: {
       type: String,

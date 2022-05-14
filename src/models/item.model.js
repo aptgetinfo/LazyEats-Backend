@@ -31,6 +31,10 @@ const itemSchema = mongoose.Schema(
       min: [1, 'Time must be above 1 minute'],
       max: [60, 'Time must be below 60 minutes'],
     },
+    ordersTotal: {
+      type: Number,
+      default: 0,
+    },
     price: {
       type: Number,
       required: true,
@@ -44,7 +48,8 @@ const itemSchema = mongoose.Schema(
       default: true,
     },
     shop: {
-      type: String,
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Shop',
       required: true,
     },
     active: {
