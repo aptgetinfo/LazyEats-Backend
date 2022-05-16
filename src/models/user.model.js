@@ -81,6 +81,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isRegisterVerified: {
+      type: Boolean,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -102,6 +106,28 @@ userSchema.pre(/^find/, function (next) {
 
 userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  if (user.isEmailVerified === false) {
+    await user.remove();
+    return false;
+  }
+  return !!user;
+};
+
+userSchema.statics.isPhoneTaken = async function (phone, excludeUserId) {
+  const user = await this.findOne({ phone, _id: { $ne: excludeUserId } });
+  if (user.isPhoneVerified === false) {
+    await user.remove();
+    return false;
+  }
+  return !!user;
+};
+
+userSchema.statics.isRegisterTaken = async function (registerNumber, excludeUserId) {
+  const user = await this.findOne({ registerNumber, _id: { $ne: excludeUserId } });
+  if (user.isRegisterVerified === false) {
+    await user.remove();
+    return false;
+  }
   return !!user;
 };
 
@@ -117,6 +143,24 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
+
+userSchema.methods.getOtp = function () {
+  const otpSecret = speakeasy.generateSecret();
+  this.temp_secret = otpSecret.base32;
+  return speakeasy.totp({
+    secret: this.temp_secret,
+    encoding: 'base32'
+  });
+};
+
+userSchema.methods.matchOtp = async function (otp) {
+  return await speakeasy.totp.verify({
+    secret: this.temp_secret,
+    encoding: 'base32',
+    token: otp,
+    window: 10,
+  });
+};
 
 const User = mongoose.model('User', userSchema);
 
